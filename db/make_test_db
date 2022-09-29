@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+## Description: Constructs Shopware 6 test database from the existing shopware 6 app database
+## Usage: create-test-db
+## Example: ddev create-test-db
+
+if [[ -z $PGDATABASE ]]; then
+	echo "PGDATABASE variable not defined in current environment";
+
+	exit 1;
+fi;
+
+if [[ ! -d "/var/lib/mysql/$PGDATABASE" ]]; then
+	echo "Unable to find the default ddev database";
+
+	exit 2;
+fi
+if [[ -d /var/lib/mysql/${PGDATABASE}_test ]]; then
+	echo "'${PGDATABASE}_test' database already exists";
+
+	exit 3;
+fi
+
+# Create dump name
+dump_name='/tmp/ddev_db_$(date +"%F").sql';
+
+# Make a mysqldump of the existing (created) database with no data
+mysqldump -d --single-transaction --quick --databases "${PGDATABASE}" | sed -e "s/\`${PGDATABASE}\`/\`${PGDATABASE}_test\`/g" | mysql

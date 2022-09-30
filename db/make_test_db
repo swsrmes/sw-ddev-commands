@@ -21,8 +21,5 @@ if [[ -d /var/lib/mysql/${PGDATABASE}_test ]]; then
 	exit 3;
 fi
 
-# Create dump name
-dump_name='/tmp/ddev_db_$(date +"%F").sql';
-
 # Make a mysqldump of the existing (created) database with no data
 mysqldump -d --single-transaction --quick --databases "${PGDATABASE}" | sed -e "s/\`${PGDATABASE}\`/\`${PGDATABASE}_test\`/g" | mysql
